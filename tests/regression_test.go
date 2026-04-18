@@ -45,14 +45,13 @@ func TestServe(t *testing.T) {
 	if err != nil {
 		t.Errorf("Expected no error, got %v", err)
 	}
+
 	go idx.Serve(":8080")
 	time.Sleep(2 * time.Second)
-
 	resp, err := http.Get("http://localhost:8080/get?amount=10")
 	if err != nil {
 		t.Errorf("Expected no error, got %v", err)
 	}
-	defer resp.Body.Close()
 
 	result := pkg.Result{}
 	err = xml.NewDecoder(resp.Body).Decode(&result)

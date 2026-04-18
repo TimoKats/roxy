@@ -12,7 +12,7 @@ type Api struct{}
 // healthcheck endpoint
 func (api Api) Ping() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("roxy is running..."))
+		w.Write([]byte("roxy is running...")) //nolint:errcheck
 	}
 }
 
@@ -33,7 +33,7 @@ func (api Api) Add(idx *Index) http.HandlerFunc {
 				return
 			}
 		}
-		w.Write([]byte("added " + strings.Join(urls, ", ")))
+		w.Write([]byte("added " + strings.Join(urls, ", "))) //nolint:errcheck
 	}
 }
 
@@ -49,7 +49,7 @@ func (api Api) Get(idx *Index) http.HandlerFunc {
 		result := idx.Get(query)
 		xmlData, _ := xml.MarshalIndent(result, "", "\t")
 		w.Header().Set("Content-Type", "application/xml")
-		w.Write(xmlData)
+		w.Write(xmlData) //nolint:errcheck
 	}
 }
 

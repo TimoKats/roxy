@@ -49,7 +49,7 @@ func (idx *Index) Get(query Query) Result {
 	}
 }
 
-// loags (newsboat) file rss feeds into the index
+// loads (newsboat) file rss feeds into the index
 func (idx *Index) Load(filename string) {
 	if filename == "" {
 		return
