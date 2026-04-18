@@ -1,4 +1,4 @@
-name: tests
+name: Tests
 
 on:
   pull_request:
@@ -8,7 +8,7 @@ on:
 
 jobs:
   linter:
-    name: linter check
+    name: Linter check
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -18,7 +18,7 @@ jobs:
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v8
   test:
-    name: regression tests
+    name: Regression tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
