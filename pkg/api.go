@@ -2,19 +2,21 @@ package pkg
 
 import (
 	"encoding/xml"
+	"log"
 	"net/http"
 	"strings"
 )
 
 type Api struct{}
 
+// healthcheck endpoint
 func (api Api) Ping() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("roxy is running..."))
 	}
 }
 
-// /add endpoint for adding rss feeds through api
+// endpoint for adding rss feeds through api
 func (api Api) Add(idx *Index) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		urls := getListParam(r.URL, "urls")
@@ -56,6 +58,7 @@ func (api Api) Refresh(idx *Index) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		idx.Clear()
 		for _, url := range idx.Urls {
+			log.Printf("refreshing: %s", url)
 			err := idx.Add(url, []string{}) // TODO! RESET TAGS!
 			if err != nil {
 				http.Error(w, "can't refresh: "+url, http.StatusInternalServerError)
