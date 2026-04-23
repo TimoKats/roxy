@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"log"
 
 	pkg "github.com/TimoKats/roxy/pkg"
 )
@@ -13,6 +14,9 @@ func main() {
 	flag.Parse()
 	// start server
 	idx := pkg.NewIndex()
-	idx.Load(*filename)
+	if err := idx.Load(*filename); err != nil {
+		log.Println("startup failed...")
+		return
+	}
 	idx.Serve(":" + *port)
 }

@@ -12,9 +12,7 @@ import (
 func TestAdd(t *testing.T) {
 	idx := pkg.NewIndex()
 	url := "https://timokats.xyz/feed/website.xml"
-	tags := []string{"example", "test"}
-	err := idx.Add(url, tags)
-	if err != nil {
+	if err := idx.Add(url, "test"); err != nil {
 		t.Errorf("Expected no error, got %v", err)
 	}
 	if len(idx.Rank) == 0 {
@@ -25,9 +23,7 @@ func TestAdd(t *testing.T) {
 func TestGet(t *testing.T) {
 	idx := pkg.NewIndex()
 	url := "https://timokats.xyz/feed/website.xml"
-	tags := []string{"example", "test"}
-	err := idx.Add(url, tags)
-	if err != nil {
+	if err := idx.Add(url, "test3"); err != nil {
 		t.Errorf("Expected no error, got %v", err)
 	}
 	query := pkg.Query{Amount: 10}
@@ -40,9 +36,7 @@ func TestGet(t *testing.T) {
 func TestServe(t *testing.T) {
 	idx := pkg.NewIndex()
 	url := "https://timokats.xyz/feed/website.xml"
-	tags := []string{"example", "test"}
-	err := idx.Add(url, tags)
-	if err != nil {
+	if err := idx.Add(url, "test5"); err != nil {
 		t.Errorf("Expected no error, got %v", err)
 	}
 
@@ -66,9 +60,7 @@ func TestServe(t *testing.T) {
 func TestClear(t *testing.T) {
 	idx := pkg.NewIndex()
 	url := "https://timokats.xyz/feed/website.xml"
-	tags := []string{"example", "test"}
-	err := idx.Add(url, tags)
-	if err != nil {
+	if err := idx.Add(url, ""); err != nil {
 		t.Errorf("Expected no error, got %v", err)
 	}
 	idx.Clear()

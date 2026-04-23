@@ -9,22 +9,22 @@ import (
 )
 
 // gets rss feed from a url and adds it to the index, and parses the pubdates
-func (idx *Index) Add(url string, tags []string) error {
+func (idx *Index) Add(url string, category string) error {
 	var feed Feed
 	resp, err := http.Get(url) //nolint:errcheck
 	if err != nil {
 		return err
 	}
 	if err = xml.NewDecoder(resp.Body).Decode(&feed); err == nil {
-		feed.ParseTime()
-		feed.Tags = tags
+		feed.Category = category
 		feed.Url = url
+		feed.ParseTime()
 		for _, item := range feed.Channel.Items {
 			item.parentFeed = &feed
 			idx.Rank = insertSorted(idx.Rank, &item)
 		}
-		idx.Urls = append(idx.Urls, url)
-		log.Printf("added to feed: '%s' %v", url, tags)
+		idx.Urls = append(idx.Urls, struct{ Url, Category string }{url, category})
+		log.Printf("added to feed: '%s' %v", url, category)
 	}
 	return err
 }
@@ -50,24 +50,25 @@ func (idx *Index) Get(query Query) Result {
 }
 
 // loads (newsboat) file rss feeds into the index
-func (idx *Index) Load(filename string) {
+func (idx *Index) Load(filename string) error {
 	if filename == "" {
-		return
+		return nil
 	}
 	file, err := os.Open(filename)
 	if err != nil {
 		log.Printf("can't open: %s", filename)
-		return
+		return err
 	}
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		line := scanner.Text()
-		if url, tags := parseLine(line); len(url) > 0 {
-			if err := idx.Add(url, tags); err != nil {
+		if url, category := parseLine(line); len(url) > 0 {
+			if err := idx.Add(url, category); err != nil {
 				log.Printf("error adding url: '%s'", url)
 			}
 		}
 	}
+	return nil
 }
 
 // servers all api endpoints for an index instance

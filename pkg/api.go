@@ -9,7 +9,7 @@ import (
 
 type Api struct{}
 
-// healthcheck endpoint
+// healthcheck endpoint, does nothing (useful)
 func (api Api) Ping() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("roxy is running...")) //nolint:errcheck
@@ -19,30 +19,30 @@ func (api Api) Ping() http.HandlerFunc {
 // endpoint for adding rss feeds through api
 func (api Api) Add(idx *Index) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		category := getStrParam(r.URL, "category")
 		urls := getListParam(r.URL, "urls")
-		tags := getListParam(r.URL, "tags")
 		if len(urls) == 0 {
 			http.Error(w, "no url", http.StatusBadRequest)
 			return
 		}
 		for _, url := range urls {
-			err := idx.Add(url, tags)
+			err := idx.Add(url, category)
 			if err != nil {
 				http.Error(w, "error: "+url, http.StatusInternalServerError)
 				idx.Clear()
 				return
 			}
 		}
-		w.Write([]byte("added " + strings.Join(urls, ", "))) //nolint:errcheck
+		w.Write([]byte("add " + strings.Join(urls, ","))) //nolint:errcheck
 	}
 }
 
-// /get endpoint to query the rss feeds, returns xml in the body
+// query the rss feeds using url parameters, returns xml in the body
 func (api Api) Get(idx *Index) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		query := Query{
 			Urls:     getListParam(r.URL, "urls"),
-			Tags:     getListParam(r.URL, "tags"),
+			Category: getStrParam(r.URL, "category"),
 			Keywords: getListParam(r.URL, "keywords"),
 			Amount:   getIntParam(r.URL, "amount", 10),
 		}
@@ -59,9 +59,9 @@ func (api Api) Refresh(idx *Index) http.HandlerFunc {
 		idx.Clear()
 		for _, url := range idx.Urls {
 			log.Printf("refreshing: %s", url)
-			err := idx.Add(url, []string{}) // TODO! RESET TAGS!
+			err := idx.Add(url.Url, url.Category)
 			if err != nil {
-				http.Error(w, "can't refresh: "+url, http.StatusInternalServerError)
+				http.Error(w, "fail: "+url.Url, http.StatusInternalServerError)
 				return
 			}
 		}

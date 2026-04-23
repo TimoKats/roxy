@@ -41,18 +41,18 @@ func parsePubDate(s string) time.Time {
 	return time.Time{}
 }
 
-// parses a newsboat URL line and gets the url and tags
-func parseLine(line string) (string, []string) {
+// parses a newsboat URL line and gets the url and category
+func parseLine(line string) (string, string) {
 	parts := strings.Split(line, " ")
 	url, err := url.Parse(parts[0])
-	tags := ""
+	category := ""
 	if err == nil {
 		if len(parts) > 1 {
-			tags = parts[1]
+			category = parts[1]
 		}
-		return url.String(), []string{tags}
+		return url.String(), category
 	}
-	return "", []string{} // no valid URL found
+	return "", "" // no valid URL found
 }
 
 // inserts an item in sorted order. Also returns index it was inserted at.
@@ -76,6 +76,16 @@ func getListParam(url *url.URL, param string) []string {
 		}
 	}
 	return filteredParams
+}
+
+func getStrParam(url *url.URL, param string) string {
+	params := url.Query().Get(param)
+	return strings.Map(func(r rune) rune {
+		if (r >= 'a' && r <= 'z') || (r >= '0' && r <= '9') {
+			return r
+		}
+		return -1
+	}, strings.ToLower(params))
 }
 
 // gets integer param from url, and takes out bad values

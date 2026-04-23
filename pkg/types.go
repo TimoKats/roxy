@@ -33,23 +33,22 @@ type Feed struct {
 	Version string   `xml:"version,attr"`
 	Channel Channel  `xml:"channel"`
 	// generated
-	Tags []string
-	Url  string
+	Category string
+	Url      string
 }
 
 type Index struct {
 	Rank []*Item
-	Urls []string
-	// Urls []struct {
-	// 	Url  string
-	// 	Tags []string
-	// }
+	Urls []struct {
+		Url      string
+		Category string
+	}
 }
 
 type Query struct {
 	Urls     []string
-	Tags     []string
 	Keywords []string
+	Category string
 	Amount   int
 }
 
