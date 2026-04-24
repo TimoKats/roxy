@@ -3,31 +3,32 @@ package pkg
 import (
 	"bufio"
 	"encoding/xml"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
 )
 
 // gets rss feed from a url and adds it to the index, and parses the pubdates
-// TODO: No error return, just skip record and log
-func (idx *Index) Add(url string, tags []string) error {
+func (idx *Index) Add(url string, category string) error {
 	var feed Feed
 	resp, err := http.Get(url) //nolint:errcheck
 	if err != nil {
 		return err
 	}
-	err = xml.NewDecoder(resp.Body).Decode(&feed)
-	if err == nil {
-		feed.ParseTime()
-		feed.Tags = tags
+	if err = xml.NewDecoder(resp.Body).Decode(&feed); err == nil {
+		feed.Category = category
 		feed.Url = url
+		feed.ParseTime()
 		for _, item := range feed.Channel.Items {
 			item.parentFeed = &feed
 			idx.Rank = insertSorted(idx.Rank, &item)
 		}
-		idx.Urls = append(idx.Urls, url)
-		log.Printf("added to feed: '%s'", url)
+		idx.Urls = append(idx.Urls, struct {
+			Url      string
+			Category string
+			Size     int
+		}{url, category, len(feed.Channel.Items)})
+		log.Printf("added to feed: '%s' %v", url, category)
 	}
 	return err
 }
@@ -52,21 +53,23 @@ func (idx *Index) Get(query Query) Result {
 	}
 }
 
-// loags (newsboat) file rss feeds into the index
+// loads (newsboat) file rss feeds into the index
 func (idx *Index) Load(filename string) error {
 	if filename == "" {
-		return nil // nothing to open
+		return nil
 	}
 	file, err := os.Open(filename)
 	if err != nil {
-		return fmt.Errorf("can't open: %s", filename)
+		log.Printf("can't open: %s", filename)
+		return err
 	}
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		line := scanner.Text()
-		url, tags := parseLine(line)
-		if len(url) > 0 {
-			idx.Add(url, tags)
+		if url, category := parseLine(line); len(url) > 0 {
+			if err := idx.Add(url, category); err != nil {
+				log.Printf("error adding url: '%s'", url)
+			}
 		}
 	}
 	return nil
@@ -75,10 +78,12 @@ func (idx *Index) Load(filename string) error {
 // servers all api endpoints for an index instance
 func (idx *Index) Serve(port string) {
 	api := Api{}
-	log.Printf("serving on http://localhost%s", port)
+	log.Printf("serving on: http://localhost%s", port)
 	http.HandleFunc("/", api.Ping())
+	http.HandleFunc("/stats", api.Stats(idx))
 	http.HandleFunc("/add", api.Add(idx))
-	http.HandleFunc("/get", api.Get(idx))
+	http.HandleFunc("/xml", api.Get(idx, XML))
+	http.HandleFunc("/json", api.Get(idx, JSON))
 	http.HandleFunc("/refresh", api.Refresh(idx))
 	log.Fatal(http.ListenAndServe(port, nil))
 }
@@ -90,5 +95,6 @@ func (idx *Index) Clear() {
 
 // initiate rss feed index class (enforce singleton?)
 func NewIndex() *Index {
+	log.Println("starting roxy...")
 	return &Index{}
 }

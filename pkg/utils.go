@@ -1,6 +1,8 @@
 package pkg
 
 import (
+	"encoding/json"
+	"encoding/xml"
 	"net/url"
 	"slices"
 	"sort"
@@ -9,10 +11,21 @@ import (
 	"time"
 )
 
-// check if two lists have any overlap. Useful for querying.
+// calls json/xml marshall function to format result object
+func marshall(data any, format Format) ([]byte, string) {
+	var result []byte
+	if format == JSON {
+		result, _ = json.Marshal(data) //nolint:errcheck
+		return result, "application/json"
+	}
+	result, _ = xml.MarshalIndent(data, "", "\t") //nolint:errcheck
+	return result, "application/xml"
+}
+
+// check if two lists have any overlap. Useful for querying
 func overlap[Type comparable](a []Type, b []Type) bool {
 	if len(a) == 0 || len(b) == 0 {
-		return false
+		return true
 	}
 	for _, aItem := range a {
 		if slices.Contains(b, aItem) {
@@ -20,6 +33,14 @@ func overlap[Type comparable](a []Type, b []Type) bool {
 		}
 	}
 	return false
+}
+
+// test if item exists in a list of comparable items
+func contains[Type comparable](list []Type, item Type) bool {
+	if len(list) == 0 {
+		return true
+	}
+	return slices.Contains(list, item)
 }
 
 // tries all mentally sane rss datetime formats and returns time object
@@ -41,18 +62,18 @@ func parsePubDate(s string) time.Time {
 	return time.Time{}
 }
 
-// parses a newsboat URL line and gets the url and tags
-func parseLine(line string) (string, []string) {
+// parses a newsboat URL line and gets the url and category
+func parseLine(line string) (string, string) {
 	parts := strings.Split(line, " ")
 	url, err := url.Parse(parts[0])
-	tags := ""
+	category := ""
 	if err == nil {
 		if len(parts) > 1 {
-			tags = parts[1]
+			category = parts[1]
 		}
-		return url.String(), []string{tags}
+		return url.String(), strings.ReplaceAll(category, `"`, "")
 	}
-	return "", []string{} // no valid URL found
+	return "", "" // no valid URL found
 }
 
 // inserts an item in sorted order. Also returns index it was inserted at.
@@ -76,6 +97,16 @@ func getListParam(url *url.URL, param string) []string {
 		}
 	}
 	return filteredParams
+}
+
+func getStrParam(url *url.URL, param string) string {
+	params := url.Query().Get(param)
+	return strings.Map(func(r rune) rune {
+		if (r >= 'a' && r <= 'z') || (r >= '0' && r <= '9') {
+			return r
+		}
+		return -1
+	}, strings.ToLower(params))
 }
 
 // gets integer param from url, and takes out bad values

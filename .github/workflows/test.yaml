@@ -1,0 +1,29 @@
+name: Tests
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+    branches:
+      - main
+
+jobs:
+  linter:
+    name: Linter check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+      - name: Run Linter
+        uses: golangci/golangci-lint-action@v8
+  test:
+    name: Regression tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v4
+        with:
+          go-version: '1.24'
+      - name: Run tests
+        run: go test ./tests/...

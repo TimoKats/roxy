@@ -8,10 +8,15 @@ import (
 )
 
 func main() {
-	filename := flag.String("filename", "", "(newsboat) file with rss feeds")
+	// flags
+	filename := flag.String("feeds", "", "(newsboat) file with rss feeds")
 	port := flag.String("port", "2112", "port number to serve on")
-	log.Println("starting roxy...")
+	flag.Parse()
+	// start server
 	idx := pkg.NewIndex()
-	idx.Load(*filename)
+	if err := idx.Load(*filename); err != nil {
+		log.Println("startup failed...")
+		return
+	}
 	idx.Serve(":" + *port)
 }
