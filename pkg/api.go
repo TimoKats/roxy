@@ -1,7 +1,6 @@
 package pkg
 
 import (
-	"encoding/xml"
 	"log"
 	"net/http"
 	"strings"
@@ -13,6 +12,14 @@ type Api struct{}
 func (api Api) Ping() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("roxy is running...")) //nolint:errcheck
+	}
+}
+
+func (api Api) Stats(idx *Index) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		data, header := marshall(idx.Urls, JSON)
+		w.Header().Set("Content-Type", header)
+		w.Write(data) //nolint:errcheck
 	}
 }
 
@@ -38,18 +45,18 @@ func (api Api) Add(idx *Index) http.HandlerFunc {
 }
 
 // query the rss feeds using url parameters, returns xml in the body
-func (api Api) Get(idx *Index) http.HandlerFunc {
+func (api Api) Get(idx *Index, format Format) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		query := Query{
-			Urls:     getListParam(r.URL, "urls"),
-			Category: getStrParam(r.URL, "category"),
-			Keywords: getListParam(r.URL, "keywords"),
-			Amount:   getIntParam(r.URL, "amount", 10),
+			Urls:       getListParam(r.URL, "urls"),
+			Categories: getListParam(r.URL, "category"),
+			Keywords:   getListParam(r.URL, "keywords"),
+			Amount:     getIntParam(r.URL, "amount", 10),
 		}
 		result := idx.Get(query)
-		xmlData, _ := xml.MarshalIndent(result, "", "\t")
-		w.Header().Set("Content-Type", "application/xml")
-		w.Write(xmlData) //nolint:errcheck
+		data, header := marshall(result, format)
+		w.Header().Set("Content-Type", header)
+		w.Write(data) //nolint:errcheck
 	}
 }
 
@@ -58,7 +65,7 @@ func (api Api) Refresh(idx *Index) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		idx.Clear()
 		for _, url := range idx.Urls {
-			log.Printf("refreshing: %s", url)
+			log.Printf("refreshing: %s", url.Url)
 			err := idx.Add(url.Url, url.Category)
 			if err != nil {
 				http.Error(w, "fail: "+url.Url, http.StatusInternalServerError)

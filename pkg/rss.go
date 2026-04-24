@@ -2,7 +2,6 @@ package pkg
 
 import (
 	"regexp"
-	"slices"
 	"strings"
 )
 
@@ -23,11 +22,11 @@ func (item *Item) Keywords() []string {
 // ps, King Terry said case/switch are devine, hence the choice
 func (item *Item) QueryMatch(query Query) bool {
 	switch {
-	case len(query.Urls) > 0 && !slices.Contains(query.Urls, item.parentFeed.Url):
+	case !contains(query.Urls, item.parentFeed.Url):
 		return false
-	case len(query.Category) > 0 && query.Category != item.parentFeed.Category:
+	case !contains(query.Categories, item.parentFeed.Category):
 		return false
-	case len(query.Keywords) > 0 && !overlap(query.Keywords, item.Keywords()):
+	case !overlap(query.Keywords, item.Keywords()):
 		return false
 	default:
 		return true

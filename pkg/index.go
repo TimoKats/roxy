@@ -23,7 +23,11 @@ func (idx *Index) Add(url string, category string) error {
 			item.parentFeed = &feed
 			idx.Rank = insertSorted(idx.Rank, &item)
 		}
-		idx.Urls = append(idx.Urls, struct{ Url, Category string }{url, category})
+		idx.Urls = append(idx.Urls, struct {
+			Url      string
+			Category string
+			Size     int
+		}{url, category, len(feed.Channel.Items)})
 		log.Printf("added to feed: '%s' %v", url, category)
 	}
 	return err
@@ -76,8 +80,10 @@ func (idx *Index) Serve(port string) {
 	api := Api{}
 	log.Printf("serving on: http://localhost%s", port)
 	http.HandleFunc("/", api.Ping())
+	http.HandleFunc("/stats", api.Stats(idx))
 	http.HandleFunc("/add", api.Add(idx))
-	http.HandleFunc("/get", api.Get(idx))
+	http.HandleFunc("/xml", api.Get(idx, XML))
+	http.HandleFunc("/json", api.Get(idx, JSON))
 	http.HandleFunc("/refresh", api.Refresh(idx))
 	log.Fatal(http.ListenAndServe(port, nil))
 }

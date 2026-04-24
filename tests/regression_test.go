@@ -42,7 +42,7 @@ func TestServe(t *testing.T) {
 
 	go idx.Serve(":8080")
 	time.Sleep(2 * time.Second)
-	resp, err := http.Get("http://localhost:8080/get?amount=10")
+	resp, err := http.Get("http://localhost:8080/xml?amount=10")
 	if err != nil {
 		t.Errorf("Expected no error, got %v", err)
 	}
