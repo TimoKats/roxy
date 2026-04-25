@@ -20,43 +20,9 @@ The return feeds are always sorted from newest to oldest and can be filtered usi
 http://localhost:2113/xml?categories=gaming&keywords=rts,rpg&amount=20
 ```
 
-<div align="center">
 
-<table>
-  <thead>
-    <tr>
-      <th align="left">Endpoint</th>
-      <th align="left">Description</th>
-      <th align="left">Parameters</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><code>/add</code></td>
-      <td>Add new feeds to proxy.</td>
-      <td align="left"><code>urls</code> <code>category</code></td>
-    </tr>
-    <tr>
-      <td><code>/xml</code></td>
-      <td>Retrieve data in XML format.</td>
-      <td><code>urls</code> <code>categories</code> <code>keywords</code> <code>amount</code></td>
-    </tr>
-    <tr>
-      <td><code>/json</code></td>
-      <td>Retrieve data in JSON format.</td>
-      <td><code>urls</code> <code>categories</code> <code>keywords</code> <code>amount</code></td>
-    </tr>
-    <tr>
-      <td><code>/stats</code></td>
-      <td>Get server information.</td>
-      <td></td>
-    </tr>
-    <tr>
-      <td><code>/refresh</code></td>
-      <td>Refresh all RSS feeds.</td>
-      <td></td>
-    </tr>
-  </tbody>
-</table>
-
-</div>
+- `/add`: Add new feeds to proxy. Parameters: `urls`, `category`
+- `/xml`: XML data. Parameters: `urls`, `categories`, `keywords`, `amount (default 10)`
+- `/json`: JSON data. Parameters: `urls`, `categories`, `keywords`, `amount (default 10)`
+- `/stats`: Server info.
+- `/refresh`: Refresh all RSS feeds.
