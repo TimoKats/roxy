@@ -24,7 +24,7 @@ http://localhost:2113/xml?categories=gaming&keywords=rts,rpg&amount=20
 
 <div align="center">
 
-<table width="100%">
+<table>
   <thead>
     <tr>
       <th align="left">Endpoint</th>
@@ -36,7 +36,7 @@ http://localhost:2113/xml?categories=gaming&keywords=rts,rpg&amount=20
     <tr>
       <td><code>/add</code></td>
       <td>Add new feeds to proxy.</td>
-      <td><code>urls</code> <code>category</code></td>
+      <td align="left"><code>urls</code> <code>category</code></td>
     </tr>
     <tr>
       <td><code>/xml</code></td>
@@ -62,4 +62,3 @@ http://localhost:2113/xml?categories=gaming&keywords=rts,rpg&amount=20
 </table>
 
 </div>
-
