@@ -16,13 +16,13 @@ root@server:~$ roxy -port 2113 -feeds /home/username/.newsboat/urls
 ```
 
 ### API
-The return feeds are always sorted from newest to oldest and can be filtered using optional parameters. For example, this request gets the 20 most recent feeds in the "gaming" category that contain the keywords "RTS" and "RPG" in XML format.
+The return feeds are always sorted from newest to oldest and can be filtered using optional parameters. For example, this request gets the 20 most recent posts in the "gaming" category that contain the keywords "RTS" and "RPG" (in XML format).
 
 ```url
 http://localhost:2113/xml?categories=gaming&keywords=rts,rpg&amount=20
 ```
 
-&nbsp;
+
 
 | Endpoint   |  Description                         | Parameters                               | Response |
 |------------|--------------------------------------|------------------------------------------|----------|
