@@ -9,9 +9,7 @@ You can install roxy with this command: `go install github.com/TimoKats/roxy`. N
 root@server:~$ roxy -port 2113 -feeds /home/username/.newsboat/urls
 2026/04/25 14:34:32 starting roxy...
 2026/04/25 14:34:33 added to feed: 'https://www.cbs.nl/nl-nl/rss-feeds/prijzen' economics
-2026/04/25 14:34:33 added to feed: 'https://www.cbs.nl/nl-nl/rss-feeds/economie' economics
 2026/04/25 14:34:34 added to feed: 'https://news.ycombinator.com/rss' tech
-2026/04/25 14:34:34 added to feed: 'https://feeds.nos.nl/nosnieuwstech' tech
 2026/04/25 14:34:38 serving on: http://localhost:2113
 ```
 
