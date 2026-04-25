@@ -26,10 +26,9 @@ http://localhost:2113/xml?categories=gaming&keywords=rts,rpg&amount=20
 
 | Endpoint   |  Description                         | Parameters                               | Response |
 |------------|--------------------------------------|------------------------------------------|----------|
-| `/add`     |  Add new feeds to proxy.             | `urls` `category`                        | JSON     |
+| `/add`     |  Add new feeds to proxy.             | `urls` `category`                        |          |
 | `/xml`     |  Retrieve data in XML format.        | `urls` `categories` `keywords` `amount`  | XML      |
 | `/json`    |  Retrieve data in JSON format.       | `urls` `categories` `keywords` `amount`  | JSON     |
 | `/stats`   |  Get server information.             |                                          | JSON     |
 | `/refresh` |  Refresh all RSS feeds.              |                                          |          |
-
 
