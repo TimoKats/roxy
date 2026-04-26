@@ -22,7 +22,7 @@ http://localhost:2113/xml?categories=gaming&keywords=rts,rpg&amount=20
 
 
 - `/add`: Add new feeds to proxy. Parameters: `urls`, `category`
-- `/xml`: XML data. Parameters: `urls`, `categories`, `keywords`, `amount (default 10)`
-- `/json`: JSON data. Parameters: `urls`, `categories`, `keywords`, `amount (default 10)`
+- `/xml`: XML formatted feed. Parameters: `urls`, `categories`, `keywords`, `amount (default 10)`
+- `/json`: JSON formatted feed. Parameters: `urls`, `categories`, `keywords`, `amount (default 10)`
 - `/stats`: Server info.
 - `/refresh`: Refresh all RSS feeds.
