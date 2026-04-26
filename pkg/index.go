@@ -23,11 +23,7 @@ func (idx *Index) Add(url string, category string) error {
 			item.parentFeed = &feed
 			idx.Rank = insertSorted(idx.Rank, &item)
 		}
-		idx.Urls = append(idx.Urls, struct {
-			Url      string
-			Category string
-			Size     int
-		}{url, category, len(feed.Channel.Items)})
+		idx.Urls = append(idx.Urls, Url{url, category, len(feed.Channel.Items)})
 		log.Printf("added to feed: '%s' %v", url, category)
 	}
 	return err
@@ -88,9 +84,10 @@ func (idx *Index) Serve(port string) {
 	log.Fatal(http.ListenAndServe(port, nil))
 }
 
-// removes all entries from rank.
+// removes all entries from rank, return copy of urls for re-create.
 func (idx *Index) Clear() {
 	idx.Rank = nil
+	idx.Urls = nil
 }
 
 // initiate rss feed index class (enforce singleton?)
