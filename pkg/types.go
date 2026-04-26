@@ -44,13 +44,15 @@ type Feed struct {
 	Url      string
 }
 
+type Url struct {
+	Url      string
+	Category string
+	Size     int
+}
+
 type Index struct {
 	Rank []*Item
-	Urls []struct {
-		Url      string
-		Category string
-		Size     int
-	}
+	Urls []Url
 }
 
 type Query struct {

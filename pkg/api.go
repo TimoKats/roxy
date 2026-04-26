@@ -63,8 +63,10 @@ func (api Api) Get(idx *Index, format Format) http.HandlerFunc {
 // refreshes the index by removing all entries, and fetching the feed.
 func (api Api) Refresh(idx *Index) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		tempUrls := make([]Url, len(idx.Urls))
+		copy(tempUrls, idx.Urls)
 		idx.Clear()
-		for _, url := range idx.Urls {
+		for _, url := range tempUrls {
 			log.Printf("refreshing: %s", url.Url)
 			err := idx.Add(url.Url, url.Category)
 			if err != nil {
